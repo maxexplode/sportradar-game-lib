@@ -74,6 +74,6 @@ public class Match {
 
     @Override
     public String toString() {
-        return "%s %d - %d %s".formatted(homeTeam, homeScore, awayScore, awayTeam);
+        return "%s %d - %s %d".formatted(homeTeam, homeScore, awayTeam, awayScore);
     }
 }

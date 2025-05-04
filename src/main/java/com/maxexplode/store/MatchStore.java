@@ -4,6 +4,7 @@ import com.maxexplode.model.Match;
 import com.maxexplode.model.MatchKey;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Optional;
 
 /**
@@ -49,4 +50,6 @@ public interface MatchStore {
      * @return a collection of all matches
      */
     Collection<Match> getAll();
+
+    Collection<Match> getAll(Comparator<Match> comparator);
 }

@@ -4,6 +4,8 @@ import com.maxexplode.model.Match;
 import com.maxexplode.model.MatchKey;
 
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -74,6 +76,12 @@ public class PersistentMatchStore implements MatchStore {
      */
     @Override
     public Collection<Match> getAll() {
+        // return repository.findAll();
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Collection<Match> getAll(Comparator<Match> comparator) {
         // return repository.findAll();
         throw new UnsupportedOperationException("Not yet implemented");
     }
