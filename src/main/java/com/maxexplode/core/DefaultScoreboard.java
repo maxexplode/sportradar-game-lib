@@ -97,6 +97,40 @@ public class DefaultScoreboard extends AbstractScoreBoard {
     }
 
     /**
+     * Returns a human-readable summary of all ongoing matches in the scoreboard.
+     * <p>
+     * Matches are listed in order of:
+     * <ol>
+     *   <li>Total score (descending)</li>
+     *   <li>Most recently started (descending)</li>
+     * </ol>
+     * Each match is formatted as: {@code 1. HomeTeam HomeScore - AwayScore AwayTeam}
+     *
+     * @return a formatted multi-line string summary of all live matches
+     */
+    public String getSummaryAsString() {
+        List<Match> matches = getSummary();
+
+        StringBuilder sb = new StringBuilder();
+        int index = 1;
+
+        for (Match match : matches) {
+            sb.append(index++)
+                    .append(". ")
+                    .append(match.getHomeTeam())
+                    .append(" ")
+                    .append(match.getHomeScore())
+                    .append(" - ")
+                    .append(match.getAwayScore())
+                    .append(" ")
+                    .append(match.getAwayTeam())
+                    .append("\n");
+        }
+
+        return sb.toString().stripTrailing();
+    }
+
+    /**
      * Retrieves a specific match by team combination.
      *
      * @param homeTeam the name of the home team
