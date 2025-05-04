@@ -5,7 +5,9 @@
         </encoder>
     </appender>
 
-    <root level="info">
-        <appender-ref ref="STDOUT"/>
+    <logger name="com.maxexplode" level="DEBUG" />
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
     </root>
 </configuration>
