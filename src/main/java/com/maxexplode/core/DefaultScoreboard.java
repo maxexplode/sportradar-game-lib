@@ -10,7 +10,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultScoreboard extends AbstractScoreBoard {
-    private final Map<MatchKey, Match> matches = new ConcurrentHashMap<>();
 
     public DefaultScoreboard() {
         super(new InMemoryMatchStore());
@@ -18,7 +17,7 @@ public class DefaultScoreboard extends AbstractScoreBoard {
 
     public void startMatch(String homeTeam, String awayTeam) {
         MatchKey key = generateKey(homeTeam, awayTeam);
-        ifMatchAbsent(key, () -> matches.put(key, new Match(homeTeam, awayTeam)),
+        ifMatchAbsent(key, () -> matchStore.put(key, new Match(homeTeam, awayTeam)),
                 () -> new InvalidMatchStateException("Match %s already exists".formatted(key)));
     }
 
@@ -30,20 +29,19 @@ public class DefaultScoreboard extends AbstractScoreBoard {
 
     public void finishMatch(String homeTeam, String awayTeam) {
         MatchKey key = generateKey(homeTeam, awayTeam);
-        withMatch(key, match -> matches.remove(key),
+        withMatch(key, match -> matchStore.remove(key),
                 () -> new InvalidMatchRequestException("Match %s not found".formatted(key)));
     }
 
-    public List<Match> getSummary() {
-        List<Match> liveMatches = new ArrayList<>(matches.values());
+    public List<Match>  getSummary() {
+        List<Match> liveMatches = new ArrayList<>(matchStore.getAll());
         liveMatches.sort(Comparator
-                .comparingInt(Match::getTotalScore).reversed()
-                .thenComparingLong(Match::getStartTime).reversed());
+                .comparingInt(Match::getTotalScore).reversed());
         return liveMatches;
     }
 
-    public Match getMatch(String homeTeam, String awayTeam) {
-        return matches.get(generateKey(homeTeam, awayTeam));
+    public Optional<Match> getMatch(String homeTeam, String awayTeam) {
+        return matchStore.get(generateKey(homeTeam, awayTeam));
     }
 
     private MatchKey generateKey(String homeTeam, String awayTeam) {

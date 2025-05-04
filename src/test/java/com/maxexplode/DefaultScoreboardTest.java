@@ -4,6 +4,10 @@ import com.maxexplode.core.DefaultScoreboard;
 import com.maxexplode.model.Match;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class DefaultScoreboardTest {
@@ -17,29 +21,77 @@ class DefaultScoreboardTest {
     @Test
     void whenStartNewMatchInitializesScoreZeroZero() {
         defaultScoreboard.startMatch("Home", "Away");
-        Match match = defaultScoreboard.getMatch("Home", "Away");
-        assertNotNull(match);
-        assertEquals(0, match.getHomeScore());
-        assertEquals(0, match.getAwayScore());
+        Optional<Match> match = defaultScoreboard.getMatch("Home", "Away");
+        assertTrue(match.isPresent());
+        assertEquals(0, match.get().getHomeScore());
+        assertEquals(0, match.get().getAwayScore());
     }
 
     @Test
     void whenUpdateScoreChangesScores() {
         defaultScoreboard.startMatch("A", "B");
         defaultScoreboard.updateScore("A", "B", 2, 3);
-        Match match = defaultScoreboard.getMatch("A", "B");
-        assertEquals(2, match.getHomeScore());
-        assertEquals(3, match.getAwayScore());
+        Optional<Match> match = defaultScoreboard.getMatch("A", "B");
+        assertTrue(match.isPresent());
+        assertEquals(2, match.get().getHomeScore());
+        assertEquals(3, match.get().getAwayScore());
     }
 
     @Test
     void whenFinishMatchRemovesItFromScoreboard() {
         defaultScoreboard.startMatch("X", "Y");
         defaultScoreboard.finishMatch("X", "Y");
-        assertNull(defaultScoreboard.getMatch("X", "Y"));
+        Optional<Match> match = defaultScoreboard.getMatch("X", "Y");
+        assertFalse(match.isPresent());
     }
 
     @Test
-    void getSummaryOrdersByTotalScoreAndRecency() {
+    void getSummaryOrdersByTotalScore() {
+        defaultScoreboard.startMatch("A", "B");
+        defaultScoreboard.updateScore("A", "B", 1, 1);
+
+        defaultScoreboard.startMatch("C", "D");
+        defaultScoreboard.updateScore("C", "D", 3, 2);
+
+        defaultScoreboard.startMatch("E", "F");
+        defaultScoreboard.updateScore("E", "F", 4, 3);
+
+        List<Match> summary = defaultScoreboard.getSummary();
+
+        assertEquals(3, summary.size());
+
+        assertEquals("E", summary.get(0).getHomeTeam());
+        assertEquals("F", summary.get(0).getAwayTeam());
+
+        assertEquals("C", summary.get(1).getHomeTeam());
+        assertEquals("D", summary.get(1).getAwayTeam());
+
+        assertEquals("A", summary.get(2).getHomeTeam());
+        assertEquals("B", summary.get(2).getAwayTeam());
+    }
+
+    @Test
+    void getSummaryOrdersByRecencyWhenTotalScoreIsSame() {
+        defaultScoreboard.startMatch("A", "B");
+        defaultScoreboard.updateScore("A", "B", 1, 1);
+
+        defaultScoreboard.startMatch("C", "D");
+        defaultScoreboard.updateScore("C", "D", 3, 2);
+
+        defaultScoreboard.startMatch("E", "F");
+        defaultScoreboard.updateScore("E", "F", 3, 2);
+
+        List<Match> summary = defaultScoreboard.getSummary();
+
+        assertEquals(3, summary.size());
+
+        assertEquals("E", summary.get(0).getHomeTeam());
+        assertEquals("F", summary.get(0).getAwayTeam());
+
+        assertEquals("C", summary.get(1).getHomeTeam());
+        assertEquals("D", summary.get(1).getAwayTeam());
+
+        assertEquals("A", summary.get(2).getHomeTeam());
+        assertEquals("B", summary.get(2).getAwayTeam());
     }
 }
