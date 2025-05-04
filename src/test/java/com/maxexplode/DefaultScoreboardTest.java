@@ -1,22 +1,23 @@
 package com.maxexplode;
 
+import com.maxexplode.core.DefaultScoreboard;
 import com.maxexplode.model.Match;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class ScoreboardTest {
-    private Scoreboard scoreboard;
+class DefaultScoreboardTest {
+    private DefaultScoreboard defaultScoreboard;
 
     @BeforeEach
     void setUp() {
-        scoreboard = new Scoreboard();
+        defaultScoreboard = new DefaultScoreboard();
     }
 
     @Test
     void whenStartNewMatchInitializesScoreZeroZero() {
-        scoreboard.startMatch("Home", "Away");
-        Match match = scoreboard.getMatch("Home", "Away");
+        defaultScoreboard.startMatch("Home", "Away");
+        Match match = defaultScoreboard.getMatch("Home", "Away");
         assertNotNull(match);
         assertEquals(0, match.getHomeScore());
         assertEquals(0, match.getAwayScore());
@@ -24,18 +25,18 @@ class ScoreboardTest {
 
     @Test
     void whenUpdateScoreChangesScores() {
-        scoreboard.startMatch("A", "B");
-        scoreboard.updateScore("A", "B", 2, 3);
-        Match match = scoreboard.getMatch("A", "B");
+        defaultScoreboard.startMatch("A", "B");
+        defaultScoreboard.updateScore("A", "B", 2, 3);
+        Match match = defaultScoreboard.getMatch("A", "B");
         assertEquals(2, match.getHomeScore());
         assertEquals(3, match.getAwayScore());
     }
 
     @Test
     void whenFinishMatchRemovesItFromScoreboard() {
-        scoreboard.startMatch("X", "Y");
-        scoreboard.finishMatch("X", "Y");
-        assertNull(scoreboard.getMatch("X", "Y"));
+        defaultScoreboard.startMatch("X", "Y");
+        defaultScoreboard.finishMatch("X", "Y");
+        assertNull(defaultScoreboard.getMatch("X", "Y"));
     }
 
     @Test
