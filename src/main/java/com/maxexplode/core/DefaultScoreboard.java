@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Default implementation of the scoreboard using a match store backend.
@@ -40,6 +39,8 @@ public class DefaultScoreboard extends AbstractScoreBoard {
         MatchKey key = generateKey(homeTeam, awayTeam);
         ifMatchAbsent(key, () -> {
             matchStore.put(key, new Match(homeTeam, awayTeam));
+            activeTeams.add(homeTeam);
+            activeTeams.add(awayTeam);
             log.info("Started new match: {}", key);
         }, () -> new InvalidMatchStateException("Match %s already exists".formatted(key)));
     }
@@ -47,10 +48,10 @@ public class DefaultScoreboard extends AbstractScoreBoard {
     /**
      * Updates the score of an existing match.
      *
-     * @param homeTeam   the name of the home team
-     * @param awayTeam   the name of the away team
-     * @param homeScore  the updated score for the home team
-     * @param awayScore  the updated score for the away team
+     * @param homeTeam  the name of the home team
+     * @param awayTeam  the name of the away team
+     * @param homeScore the updated score for the home team
+     * @param awayScore the updated score for the away team
      * @throws InvalidMatchRequestException if the match does not exist
      */
     public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
@@ -72,6 +73,8 @@ public class DefaultScoreboard extends AbstractScoreBoard {
         MatchKey key = generateKey(homeTeam, awayTeam);
         withMatch(key, match -> {
             matchStore.remove(key);
+            activeTeams.remove(homeTeam);
+            activeTeams.remove(awayTeam);
             log.info("Finished match: {}", key);
         }, () -> new InvalidMatchRequestException("Match %s not found".formatted(key)));
     }
@@ -83,36 +86,14 @@ public class DefaultScoreboard extends AbstractScoreBoard {
      * @return a sorted list of live matches
      */
     public List<Match> getSummary() {
-        List<Match> liveMatches = new ArrayList<>(matchStore.getAll());
+        Comparator<Match> comparator = Comparator
+                .comparingInt(Match::getTotalScore).reversed()
+                .thenComparing(Comparator.comparing(Match::getStartTime).reversed());
+
+        List<Match> liveMatches = new ArrayList<>(matchStore.getAll(comparator));
         log.debug("Fetched {} matches from store", liveMatches.size());
-
-        liveMatches.sort(Comparator
-                .comparingInt(Match::getTotalScore).reversed());
-
-        Map<Integer, List<Match>> sortedGroups = liveMatches.stream()
-                .collect(Collectors.groupingBy(
-                        Match::getTotalScore,
-                        LinkedHashMap::new,
-                        Collectors.toList()
-                ));
-
-        if (log.isDebugEnabled()) {
-            log.debug("Grouped matches by total score. Distinct score groups: {}", sortedGroups.size());
-            sortedGroups.keySet().stream().findFirst()
-                    .ifPresent(topScore -> log.debug("Top score group: {}", topScore));
-        }
-
-        List<Match> sortedMatches = new ArrayList<>();
-
-        for (Map.Entry<Integer, List<Match>> entry : sortedGroups.entrySet()) {
-            List<Match> sortedByRecency = entry.getValue().stream()
-                    .sorted(Comparator.comparing(Match::getStartTime).reversed())
-                    .toList();
-            sortedMatches.addAll(sortedByRecency);
-        }
-
-        log.info("Generated match summary. Total sorted matches: {}", sortedMatches.size());
-        return sortedMatches;
+        log.info("Generated match summary. Total sorted matches: {}", liveMatches.size());
+        return liveMatches;
     }
 
     /**

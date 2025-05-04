@@ -1,6 +1,7 @@
 package com.maxexplode;
 
 import com.maxexplode.core.DefaultScoreboard;
+import com.maxexplode.exception.InvalidMatchStateException;
 import com.maxexplode.model.Match;
 import com.maxexplode.store.InMemoryMatchStore;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,5 +95,18 @@ class DefaultScoreboardTest {
 
         assertEquals("A", summary.get(2).getHomeTeam());
         assertEquals("B", summary.get(2).getAwayTeam());
+    }
+
+    @Test
+    void shouldThrowWhenOneTeamIsAlreadyInAnotherMatch() {
+        defaultScoreboard.startMatch("A", "B");
+
+        assertThrows(InvalidMatchStateException.class, () ->
+                defaultScoreboard.startMatch("B", "C"));
+
+        assertThrows(InvalidMatchStateException.class, () ->
+                defaultScoreboard.startMatch("A", "D"));
+
+        defaultScoreboard.startMatch("C", "D");
     }
 }

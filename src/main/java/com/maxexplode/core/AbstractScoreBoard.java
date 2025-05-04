@@ -5,6 +5,8 @@ import com.maxexplode.model.MatchKey;
 import com.maxexplode.store.MatchStore;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -13,6 +15,8 @@ import java.util.function.Supplier;
  * Provides shared utility methods for working with the match store.
  */
 public abstract class AbstractScoreBoard implements IScoreboard {
+
+    final Set<String> activeTeams = ConcurrentHashMap.newKeySet();
 
     /**
      * The underlying store for match data.
@@ -58,7 +62,9 @@ public abstract class AbstractScoreBoard implements IScoreboard {
     protected void ifMatchAbsent(MatchKey key,
                                  Runnable ifAbsent,
                                  Supplier<? extends RuntimeException> ifPresent) {
-        if (matchStore.contains(key)) {
+        boolean teamConflict = activeTeams.contains(key.homeTeam()) || activeTeams.contains(key.awayTeam());
+
+        if (matchStore.contains(key) || teamConflict) {
             throw ifPresent.get();
         } else {
             ifAbsent.run();
