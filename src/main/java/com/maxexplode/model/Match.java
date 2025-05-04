@@ -1,5 +1,6 @@
 package com.maxexplode.model;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Match {
@@ -7,12 +8,12 @@ public class Match {
     private final String awayTeam;
     private int homeScore = 0;
     private int awayScore = 0;
-    private final long startTime;
+    private final LocalDateTime startTime;
 
     public Match(String homeTeam, String awayTeam) {
         this.homeTeam = Objects.requireNonNull(homeTeam);
         this.awayTeam = Objects.requireNonNull(awayTeam);
-        this.startTime = System.nanoTime();
+        this.startTime = LocalDateTime.now();
     }
 
     public String getHomeTeam() {
@@ -31,7 +32,7 @@ public class Match {
         return awayScore;
     }
 
-    public long getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 

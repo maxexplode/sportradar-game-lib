@@ -8,6 +8,8 @@ import com.maxexplode.repository.InMemoryMatchStore;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DefaultScoreboard extends AbstractScoreBoard {
 
@@ -37,7 +39,24 @@ public class DefaultScoreboard extends AbstractScoreBoard {
         List<Match> liveMatches = new ArrayList<>(matchStore.getAll());
         liveMatches.sort(Comparator
                 .comparingInt(Match::getTotalScore).reversed());
-        return liveMatches;
+
+        Map<Integer, List<Match>> sortedGroups = liveMatches.stream()
+                .collect(Collectors.groupingBy(
+                        Match::getTotalScore,
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ));
+
+        List<Match> sortedMatches = new ArrayList<>();
+
+        for (Map.Entry<Integer, List<Match>> entry : sortedGroups.entrySet()) {
+            List<Match> sortedByRecency = entry.getValue().stream()
+                    .sorted(Comparator.comparing(Match::getStartTime).reversed())
+                    .toList();
+            sortedMatches.addAll(sortedByRecency);
+        }
+
+        return sortedMatches;
     }
 
     public Optional<Match> getMatch(String homeTeam, String awayTeam) {
