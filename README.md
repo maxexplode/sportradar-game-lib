@@ -1,25 +1,30 @@
 # Live Football World Cup Scoreboard Library
 
-A simple library to track and display live football World Cup matches and their scores. It supports starting new matches, updating scores, finishing matches, and generating a live summary ordered by total score and recency.
+A simple and flexible Java library to track and manage live football World Cup matches and scores. Ideal for simulations, demos, and backend systems that need live match tracking.
 
-## Features
+---
 
-* **Start a new match**: Add a match with initial score 0–0.
-* **Update score**: Update the current score of any ongoing match.
-* **Finish match**: Remove a match from the live scoreboard when it ends.
-* **Get summary**: Retrieve all ongoing matches, ordered by:
+## ✨ Features
 
-    1. Total score (descending)
-    2. Most recently started match when tied
+- ✅ **Start a new match**: Add a match to the scoreboard with an initial score of 0–0.
+- ✅ **Update scores**: Modify the current scores of ongoing matches.
+- ✅ **Finish a match**: Remove a match from the scoreboard when it's over.
+- ✅ **Get match summary**: List all ongoing matches, ordered by:
+  1. **Total score (descending)**
+  2. **Most recently started match when scores are equal**
 
-## Requirements
+---
 
-* Java 21 or higher
-* Maven (for building)
+## 📦 Requirements
 
-## Installation
+- Java 21+
+- Maven 3.9+
 
-Add the library to your project via Maven:
+---
+
+## 🚀 Installation
+
+Add the dependency to your `pom.xml`:
 
 ```xml
 <dependency>
@@ -34,3 +39,72 @@ Then build your project:
 ```bash
 mvn clean install
 ```
+
+---
+
+## 🛠️ Usage
+
+### 🏗 Initialize the scoreboard
+
+```java
+import com.maxexplode.ScoreBoardBuilder;
+import com.maxexplode.core.IScoreboard;
+
+IScoreboard scoreboard = new ScoreBoardBuilder().build();
+```
+
+### 🟢 Start a match
+
+```java
+scoreboard.startMatch("Mexico", "Canada");
+```
+
+### 🔁 Update scores
+
+```java
+scoreboard.updateScore("Mexico", "Canada", 0, 5);
+```
+
+### 🔚 Finish match
+
+```java
+scoreboard.finishMatch("Mexico", "Canada");
+```
+
+### 📊 Get summary
+
+```java
+List<Match> summary = scoreboard.getSummary();
+summary.forEach(System.out::println);
+```
+
+---
+
+## 📝 Logging
+
+This library uses **SLF4J** with **Logback** as the default backend.
+
+### Sample `logback.xml`
+
+```xml
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  
+  <logger name="com.maxexplode" level="DEBUG"/>
+
+  <root level="INFO">
+    <appender-ref ref="STDOUT"/>
+  </root>
+</configuration>
+```
+
+This logs:
+
+- Match start, update, and finish events (`INFO`)
+- Summary generation and internal storage lookups (`DEBUG`)
+
+---

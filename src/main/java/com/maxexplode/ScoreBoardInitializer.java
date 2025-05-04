@@ -9,11 +9,11 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
-public class Main {
-    private static final Logger log = LoggerFactory.getLogger(Main.class);
+public class ScoreBoardInitializer {
+    private static final Logger log = LoggerFactory.getLogger(ScoreBoardInitializer.class);
 
     public static void main(String[] args) {
-        try (InputStream is = Main.class.getResourceAsStream("/banner.txt")) {
+        try (InputStream is = ScoreBoardInitializer.class.getResourceAsStream("/banner.txt")) {
             if (is == null) {
                 log.error("Could not find banner.txt on the classpath");
                 return;

@@ -2,7 +2,7 @@ package com.maxexplode;
 
 import com.maxexplode.model.Match;
 import com.maxexplode.model.MatchKey;
-import com.maxexplode.repository.InMemoryMatchStore;
+import com.maxexplode.store.InMemoryMatchStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

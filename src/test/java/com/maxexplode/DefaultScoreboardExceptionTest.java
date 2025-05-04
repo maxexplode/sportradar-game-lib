@@ -3,6 +3,7 @@ package com.maxexplode;
 import com.maxexplode.core.DefaultScoreboard;
 import com.maxexplode.exception.InvalidMatchRequestException;
 import com.maxexplode.exception.InvalidMatchStateException;
+import com.maxexplode.store.InMemoryMatchStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,7 +13,7 @@ class DefaultScoreboardExceptionTest {
 
     @BeforeEach
     void setUp() {
-        defaultScoreboard = new DefaultScoreboard();
+        defaultScoreboard = new DefaultScoreboard(new InMemoryMatchStore());
     }
 
     @Test

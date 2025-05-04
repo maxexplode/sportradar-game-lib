@@ -2,21 +2,43 @@ package com.maxexplode.core;
 
 import com.maxexplode.model.Match;
 import com.maxexplode.model.MatchKey;
-import com.maxexplode.repository.MatchStore;
+import com.maxexplode.store.MatchStore;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * Abstract base class for scoreboard implementations.
+ * Provides shared utility methods for working with the match store.
+ */
 public abstract class AbstractScoreBoard implements IScoreboard {
 
+    /**
+     * The underlying store for match data.
+     */
     protected final MatchStore matchStore;
 
+    /**
+     * Constructs the scoreboard with the given match store.
+     *
+     * @param matchStore the match store implementation (in-memory or persistent)
+     */
     protected AbstractScoreBoard(MatchStore matchStore) {
         this.matchStore = matchStore;
     }
 
-    protected void withMatch(MatchKey key, Consumer<Match> ifPresent, Supplier<? extends RuntimeException> ifAbsent) {
+    /**
+     * Executes the given action if a match is found for the provided key,
+     * or throws an exception from the given supplier if not.
+     *
+     * @param key       the key to look up
+     * @param ifPresent consumer to apply if match exists
+     * @param ifAbsent  exception supplier if match does not exist
+     */
+    protected void withMatch(MatchKey key,
+                             Consumer<Match> ifPresent,
+                             Supplier<? extends RuntimeException> ifAbsent) {
         Optional<Match> match = matchStore.get(key);
         if (match.isPresent()) {
             ifPresent.accept(match.get());
@@ -25,13 +47,21 @@ public abstract class AbstractScoreBoard implements IScoreboard {
         }
     }
 
-    protected void ifMatchAbsent(MatchKey key, Runnable ifAbsent, Supplier<? extends RuntimeException> ifPresent) {
+    /**
+     * Executes the given action if the match does not exist for the key,
+     * or throws an exception from the given supplier if it already exists.
+     *
+     * @param key        the match key to check
+     * @param ifAbsent   runnable to execute if match does not exist
+     * @param ifPresent  exception supplier if match already exists
+     */
+    protected void ifMatchAbsent(MatchKey key,
+                                 Runnable ifAbsent,
+                                 Supplier<? extends RuntimeException> ifPresent) {
         if (matchStore.contains(key)) {
             throw ifPresent.get();
         } else {
             ifAbsent.run();
         }
     }
-
 }
-

@@ -2,6 +2,7 @@ package com.maxexplode;
 
 import com.maxexplode.core.DefaultScoreboard;
 import com.maxexplode.model.Match;
+import com.maxexplode.store.InMemoryMatchStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +16,7 @@ class DefaultScoreboardTest {
 
     @BeforeEach
     void setUp() {
-        defaultScoreboard = new DefaultScoreboard();
+        defaultScoreboard = new DefaultScoreboard(new InMemoryMatchStore());
     }
 
     @Test
