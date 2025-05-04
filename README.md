@@ -76,6 +76,8 @@ scoreboard.finishMatch("Mexico", "Canada");
 ```java
 List<Match> summary = scoreboard.getSummary();
 summary.forEach(System.out::println);
+//or
+scoreboard.getSummaryAsString();
 ```
 
 ---

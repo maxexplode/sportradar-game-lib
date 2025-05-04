@@ -57,4 +57,10 @@ public interface IScoreboard {
      * @return an Optional containing the match if found, otherwise empty
      */
     Optional<Match> getMatch(String homeTeam, String awayTeam);
+
+    /**
+     * Generates a formatted string summary of all ongoing matches.
+     * @return a multi-line string representing the current live match summary
+     */
+    String getSummaryAsString();
 }
